@@ -1,7 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBookmarkSchema, insertStudySessionSchema } from "@shared/schema";
+import { 
+  insertBookmarkSchema, 
+  insertStudySessionSchema, 
+  insertNoteSchema, 
+  insertTaskSchema, 
+  insertFlashcardSchema, 
+  insertScheduleSchema 
+} from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || "";
@@ -222,6 +229,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ totalTime });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch total study time" });
+    }
+  });
+
+  // Notes routes
+  app.get("/api/notes", async (req, res) => {
+    try {
+      const userId = 1; // Using default user for demo
+      const notes = await storage.getNotes(userId);
+      res.json(notes);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch notes" });
+    }
+  });
+
+  app.post("/api/notes", async (req, res) => {
+    try {
+      const userId = 1;
+      const noteData = insertNoteSchema.parse(req.body);
+      const note = await storage.createNote(userId, noteData);
+      res.json(note);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid note data" });
+    }
+  });
+
+  // Tasks routes  
+  app.get("/api/tasks", async (req, res) => {
+    try {
+      const userId = 1;
+      const tasks = await storage.getTasks(userId);
+      res.json(tasks);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch tasks" });
+    }
+  });
+
+  app.post("/api/tasks", async (req, res) => {
+    try {
+      const userId = 1;
+      const taskData = insertTaskSchema.parse(req.body);
+      const task = await storage.createTask(userId, taskData);
+      res.json(task);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid task data" });
+    }
+  });
+
+  // Flashcards routes
+  app.get("/api/flashcards", async (req, res) => {
+    try {
+      const userId = 1;
+      const flashcards = await storage.getFlashcards(userId);
+      res.json(flashcards);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch flashcards" });
+    }
+  });
+
+  app.post("/api/flashcards", async (req, res) => {
+    try {
+      const userId = 1;
+      const flashcardData = insertFlashcardSchema.parse(req.body);
+      const flashcard = await storage.createFlashcard(userId, flashcardData);
+      res.json(flashcard);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid flashcard data" });
+    }
+  });
+
+  // Schedule routes
+  app.get("/api/schedules", async (req, res) => {
+    try {
+      const userId = 1;
+      const schedules = await storage.getSchedules(userId);
+      res.json(schedules);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch schedules" });
+    }
+  });
+
+  app.post("/api/schedules", async (req, res) => {
+    try {
+      const userId = 1;
+      const scheduleData = insertScheduleSchema.parse(req.body);
+      const schedule = await storage.createSchedule(userId, scheduleData);
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid schedule data" });
     }
   });
 

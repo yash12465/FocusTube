@@ -113,7 +113,7 @@ export default function Notes() {
   const filteredNotes = notes?.filter((note: Note) => {
     const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          note.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSubject = !selectedSubject || note.subject === selectedSubject;
+    const matchesSubject = selectedSubject === "all" || !selectedSubject || note.subject === selectedSubject;
     return matchesSearch && matchesSubject;
   }) || [];
 
@@ -218,7 +218,7 @@ export default function Notes() {
               <SelectValue placeholder="Filter by subject" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All subjects</SelectItem>
+              <SelectItem value="all">All subjects</SelectItem>
               {subjects.map((subject) => (
                 <SelectItem key={subject} value={subject}>
                   {subject}

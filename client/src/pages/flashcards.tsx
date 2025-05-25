@@ -87,7 +87,7 @@ export default function Flashcards() {
   };
 
   const filteredCards = flashcards?.filter((card: Flashcard) => {
-    return !selectedSubject || card.subject === selectedSubject;
+    return selectedSubject === "all" || !selectedSubject || card.subject === selectedSubject;
   }) || [];
 
   const studyCards = studyMode ? filteredCards : [];
@@ -315,7 +315,7 @@ export default function Flashcards() {
               <SelectValue placeholder="Filter by subject" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All subjects</SelectItem>
+              <SelectItem value="all">All subjects</SelectItem>
               {subjects.map((subject) => (
                 <SelectItem key={subject} value={subject}>
                   {subject}

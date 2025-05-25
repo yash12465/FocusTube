@@ -21,6 +21,22 @@ export interface IStorage {
   getStudySessions(userId: number): Promise<StudySession[]>;
   addStudySession(userId: number, session: InsertStudySession): Promise<StudySession>;
   getTotalStudyTime(userId: number): Promise<number>;
+  
+  // Notes
+  getNotes(userId: number): Promise<Note[]>;
+  createNote(userId: number, note: InsertNote): Promise<Note>;
+  
+  // Tasks
+  getTasks(userId: number): Promise<Task[]>;
+  createTask(userId: number, task: InsertTask): Promise<Task>;
+  
+  // Flashcards
+  getFlashcards(userId: number): Promise<Flashcard[]>;
+  createFlashcard(userId: number, flashcard: InsertFlashcard): Promise<Flashcard>;
+  
+  // Schedules
+  getSchedules(userId: number): Promise<Schedule[]>;
+  createSchedule(userId: number, schedule: InsertSchedule): Promise<Schedule>;
 }
 
 export class MemStorage implements IStorage {

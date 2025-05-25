@@ -107,8 +107,8 @@ export default function Tasks() {
   };
 
   const filteredTasks = tasks?.filter((task: Task) => {
-    const matchesStatus = !filterStatus || task.status === filterStatus;
-    const matchesPriority = !filterPriority || task.priority === filterPriority;
+    const matchesStatus = filterStatus === "all" || !filterStatus || task.status === filterStatus;
+    const matchesPriority = filterPriority === "all" || !filterPriority || task.priority === filterPriority;
     return matchesStatus && matchesPriority;
   }) || [];
 
@@ -214,7 +214,7 @@ export default function Tasks() {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All status</SelectItem>
+              <SelectItem value="all">All status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="in_progress">In Progress</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
@@ -225,7 +225,7 @@ export default function Tasks() {
               <SelectValue placeholder="Filter by priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All priorities</SelectItem>
+              <SelectItem value="all">All priorities</SelectItem>
               <SelectItem value="urgent">Urgent</SelectItem>
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
