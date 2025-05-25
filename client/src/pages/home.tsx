@@ -24,26 +24,35 @@ export default function Home() {
   // Fetch trending videos by default
   const { data: trendingData, isLoading: isLoadingTrending } = useQuery({
     queryKey: ['/api/videos/trending'],
-    enabled: !searchQuery && !selectedSubject,
+    enabled: !searchQuery && !selectedSubject && !filters.duration && !filters.level && filters.channels.length === 0,
   });
 
+  // Build search query parameters
+  const buildSearchParams = () => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('q', searchQuery);
+    if (selectedSubject) params.append('subject', selectedSubject);
+    if (filters.duration) params.append('duration', filters.duration);
+    if (filters.level) params.append('level', filters.level);
+    if (filters.channels.length > 0) params.append('channels', filters.channels.join(','));
+    return params.toString();
+  };
+
   // Search videos when query or filters change
-  const { data: searchData, isLoading: isLoadingSearch, refetch: searchVideos } = useQuery({
-    queryKey: ['/api/videos/search', searchQuery, selectedSubject, filters],
-    enabled: false,
+  const shouldSearch = !!(searchQuery || selectedSubject || filters.duration || filters.level || filters.channels.length > 0);
+  const { data: searchData, isLoading: isLoadingSearch } = useQuery({
+    queryKey: ['/api/videos/search', buildSearchParams()],
+    queryFn: () => fetch(`/api/videos/search?${buildSearchParams()}`).then(res => res.json()),
+    enabled: shouldSearch,
   });
 
   const handleSearch = () => {
-    if (searchQuery || selectedSubject || filters.duration || filters.level || filters.channels.length > 0) {
-      searchVideos();
-    }
+    // The search will automatically trigger due to the query key changes
   };
 
   // Auto-search when subject is selected
   useEffect(() => {
-    if (selectedSubject) {
-      handleSearch();
-    }
+    // Search will automatically trigger when selectedSubject changes due to query key dependency
   }, [selectedSubject]);
 
   const handlePlayVideo = (video: Video) => {

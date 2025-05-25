@@ -162,8 +162,8 @@ export class MemStorage implements IStorage {
       ...insertNote, 
       id, 
       userId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     this.notes.set(id, note);
     return note;
@@ -182,7 +182,7 @@ export class MemStorage implements IStorage {
       ...insertTask, 
       id, 
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     };
     this.tasks.set(id, task);
     return task;
