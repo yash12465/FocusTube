@@ -21,13 +21,13 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
   const queryClient = useQueryClient();
   const [showTimer, setShowTimer] = useState(false);
 
-  if (!video) return null;
-
   // Check if video is bookmarked
   const { data: bookmarkStatus } = useQuery({
-    queryKey: [`/api/bookmarks/${video.id}/status`],
-    enabled: !!video,
+    queryKey: [`/api/bookmarks/${video?.id}/status`],
+    enabled: !!video && isOpen,
   });
+
+  if (!video) return null;
 
   const addBookmarkMutation = useMutation({
     mutationFn: async () => {
