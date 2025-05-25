@@ -59,9 +59,11 @@ export default function SearchFiltersComponent({
             </div>
             
             <nav className="hidden md:flex items-center space-x-6">
-              <a href="#" className="text-slate-600 hover:text-primary transition-colors">Dashboard</a>
-              <a href="#" className="text-slate-600 hover:text-primary transition-colors">Bookmarks</a>
-              <a href="#" className="text-slate-600 hover:text-primary transition-colors">Study Stats</a>
+              <a href="/dashboard" className="text-slate-600 hover:text-primary transition-colors">Dashboard</a>
+              <a href="/notes" className="text-slate-600 hover:text-primary transition-colors">Notes</a>
+              <a href="/tasks" className="text-slate-600 hover:text-primary transition-colors">Tasks</a>
+              <a href="/flashcards" className="text-slate-600 hover:text-primary transition-colors">Flashcards</a>
+              <a href="/schedule" className="text-slate-600 hover:text-primary transition-colors">Schedule</a>
             </nav>
 
             <div className="flex items-center space-x-3">
