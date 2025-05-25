@@ -21,16 +21,15 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
   const queryClient = useQueryClient();
   const [showTimer, setShowTimer] = useState(false);
 
-  // Check if video is bookmarked
+  // Always call hooks in the same order
   const { data: bookmarkStatus } = useQuery({
-    queryKey: [`/api/bookmarks/${video?.id}/status`],
+    queryKey: [`/api/bookmarks/${video?.id || 'none'}/status`],
     enabled: !!video && isOpen,
   });
 
-  if (!video) return null;
-
   const addBookmarkMutation = useMutation({
     mutationFn: async () => {
+      if (!video) throw new Error("No video selected");
       return apiRequest('POST', '/api/bookmarks', {
         videoId: video.id,
         title: video.title,
@@ -41,7 +40,7 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/bookmarks'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/bookmarks/${video.id}/status`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/bookmarks/${video?.id}/status`] });
       toast({ title: "Video bookmarked successfully" });
     },
     onError: () => {
@@ -51,11 +50,12 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
 
   const removeBookmarkMutation = useMutation({
     mutationFn: async () => {
+      if (!video) throw new Error("No video selected");
       return apiRequest('DELETE', `/api/bookmarks/${video.id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/bookmarks'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/bookmarks/${video.id}/status`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/bookmarks/${video?.id}/status`] });
       toast({ title: "Bookmark removed" });
     },
     onError: () => {
@@ -63,8 +63,11 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
     },
   });
 
+  // Return early after all hooks are called
+  if (!video) return null;
+
   const handleBookmarkToggle = () => {
-    if (bookmarkStatus?.isBookmarked) {
+    if ((bookmarkStatus as any)?.isBookmarked) {
       removeBookmarkMutation.mutate();
     } else {
       addBookmarkMutation.mutate();
@@ -107,7 +110,7 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
             >
               <Bookmark 
                 className={`w-4 h-4 ${
-                  bookmarkStatus?.isBookmarked 
+                  (bookmarkStatus as any)?.isBookmarked 
                     ? 'fill-current text-accent' 
                     : 'text-slate-600'
                 }`} 
