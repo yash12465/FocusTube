@@ -1,4 +1,10 @@
-import { users, bookmarks, studySessions, type User, type InsertUser, type Bookmark, type InsertBookmark, type StudySession, type InsertStudySession } from "@shared/schema";
+import { 
+  users, bookmarks, studySessions, notes, tasks, flashcards, goals, schedules,
+  type User, type InsertUser, type Bookmark, type InsertBookmark, 
+  type StudySession, type InsertStudySession, type Note, type InsertNote,
+  type Task, type InsertTask, type Flashcard, type InsertFlashcard,
+  type Goal, type InsertGoal, type Schedule, type InsertSchedule
+} from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -99,6 +105,7 @@ export class MemStorage implements IStorage {
       ...session, 
       id, 
       userId,
+      subject: session.subject || null,
       date: new Date()
     };
     this.studySessions.set(id, newSession);
