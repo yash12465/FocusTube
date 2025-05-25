@@ -43,17 +43,33 @@ export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private bookmarks: Map<number, Bookmark>;
   private studySessions: Map<number, StudySession>;
+  private notes: Map<number, Note>;
+  private tasks: Map<number, Task>;
+  private flashcards: Map<number, Flashcard>;
+  private schedules: Map<number, Schedule>;
   private currentUserId: number;
   private currentBookmarkId: number;
   private currentSessionId: number;
+  private currentNoteId: number;
+  private currentTaskId: number;
+  private currentFlashcardId: number;
+  private currentScheduleId: number;
 
   constructor() {
     this.users = new Map();
     this.bookmarks = new Map();
     this.studySessions = new Map();
+    this.notes = new Map();
+    this.tasks = new Map();
+    this.flashcards = new Map();
+    this.schedules = new Map();
     this.currentUserId = 1;
     this.currentBookmarkId = 1;
     this.currentSessionId = 1;
+    this.currentNoteId = 1;
+    this.currentTaskId = 1;
+    this.currentFlashcardId = 1;
+    this.currentScheduleId = 1;
     
     // Create a default user for demo purposes
     this.createUser({ username: "demo", password: "demo" });
@@ -131,6 +147,83 @@ export class MemStorage implements IStorage {
   async getTotalStudyTime(userId: number): Promise<number> {
     const sessions = await this.getStudySessions(userId);
     return sessions.reduce((total, session) => total + session.duration, 0);
+  }
+
+  // Notes methods
+  async getNotes(userId: number): Promise<Note[]> {
+    return Array.from(this.notes.values()).filter(
+      (note) => note.userId === userId,
+    );
+  }
+
+  async createNote(userId: number, insertNote: InsertNote): Promise<Note> {
+    const id = this.currentNoteId++;
+    const note: Note = { 
+      ...insertNote, 
+      id, 
+      userId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.notes.set(id, note);
+    return note;
+  }
+
+  // Tasks methods
+  async getTasks(userId: number): Promise<Task[]> {
+    return Array.from(this.tasks.values()).filter(
+      (task) => task.userId === userId,
+    );
+  }
+
+  async createTask(userId: number, insertTask: InsertTask): Promise<Task> {
+    const id = this.currentTaskId++;
+    const task: Task = { 
+      ...insertTask, 
+      id, 
+      userId,
+      createdAt: new Date().toISOString()
+    };
+    this.tasks.set(id, task);
+    return task;
+  }
+
+  // Flashcards methods
+  async getFlashcards(userId: number): Promise<Flashcard[]> {
+    return Array.from(this.flashcards.values()).filter(
+      (flashcard) => flashcard.userId === userId,
+    );
+  }
+
+  async createFlashcard(userId: number, insertFlashcard: InsertFlashcard): Promise<Flashcard> {
+    const id = this.currentFlashcardId++;
+    const flashcard: Flashcard = { 
+      ...insertFlashcard, 
+      id, 
+      userId,
+      createdAt: new Date().toISOString()
+    };
+    this.flashcards.set(id, flashcard);
+    return flashcard;
+  }
+
+  // Schedules methods
+  async getSchedules(userId: number): Promise<Schedule[]> {
+    return Array.from(this.schedules.values()).filter(
+      (schedule) => schedule.userId === userId,
+    );
+  }
+
+  async createSchedule(userId: number, insertSchedule: InsertSchedule): Promise<Schedule> {
+    const id = this.currentScheduleId++;
+    const schedule: Schedule = { 
+      ...insertSchedule, 
+      id, 
+      userId,
+      createdAt: new Date().toISOString()
+    };
+    this.schedules.set(id, schedule);
+    return schedule;
   }
 }
 
