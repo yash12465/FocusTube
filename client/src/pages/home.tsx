@@ -56,28 +56,94 @@ export default function Home() {
     setSelectedVideo(null);
   };
 
-  const videos = searchData?.videos || trendingData?.videos || [];
+  const videos = (searchData as any)?.videos || (trendingData as any)?.videos || [];
   const isLoading = isLoadingTrending || isLoadingSearch;
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar Filters */}
-        <aside className="lg:col-span-1 p-4">
-          <SearchFiltersComponent 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedSubject={selectedSubject}
-            setSelectedSubject={setSelectedSubject}
-            filters={filters}
-            setFilters={setFilters}
-            onSearch={handleSearch}
-          />
-        </aside>
+      <SearchFiltersComponent 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedSubject={selectedSubject}
+        setSelectedSubject={setSelectedSubject}
+        filters={filters}
+        setFilters={setFilters}
+        onSearch={handleSearch}
+      />
 
-        {/* Main Content */}
-        <main className="lg:col-span-3 p-4">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar Filters */}
+          <aside className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">Filters</h3>
+              
+              {/* Duration Filter */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-slate-700 mb-3">Duration</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      id="short" 
+                      name="duration" 
+                      value="short"
+                      checked={filters.duration === 'short'}
+                      onChange={(e) => setFilters({ ...filters, duration: e.target.value as any })}
+                    />
+                    <label htmlFor="short" className="text-sm text-slate-600">Short (under 10 min)</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      id="medium" 
+                      name="duration" 
+                      value="medium"
+                      checked={filters.duration === 'medium'}
+                      onChange={(e) => setFilters({ ...filters, duration: e.target.value as any })}
+                    />
+                    <label htmlFor="medium" className="text-sm text-slate-600">Medium (10-30 min)</label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      id="long" 
+                      name="duration" 
+                      value="long"
+                      checked={filters.duration === 'long'}
+                      onChange={(e) => setFilters({ ...filters, duration: e.target.value as any })}
+                    />
+                    <label htmlFor="long" className="text-sm text-slate-600">Long (30+ min)</label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Level Filter */}
+              <div>
+                <h4 className="text-sm font-medium text-slate-700 mb-3">Level</h4>
+                <div className="space-y-2">
+                  {['beginner', 'intermediate', 'advanced'].map((level) => (
+                    <div key={level} className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        id={level}
+                        checked={filters.level === level}
+                        onChange={(e) => 
+                          setFilters({ ...filters, level: e.target.checked ? level as any : '' })
+                        }
+                      />
+                      <label htmlFor={level} className="text-sm text-slate-600 capitalize">
+                        {level}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <main className="lg:col-span-3">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-slate-800">
@@ -123,7 +189,7 @@ export default function Home() {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {videos.map((video) => (
+                  {videos.map((video: Video) => (
                     <VideoCard
                       key={video.id}
                       video={video}
@@ -143,8 +209,8 @@ export default function Home() {
                 </div>
               </>
             )}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
 
       {/* Video Modal */}
