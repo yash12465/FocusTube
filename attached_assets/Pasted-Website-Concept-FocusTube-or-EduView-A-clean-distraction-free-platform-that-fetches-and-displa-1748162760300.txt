@@ -1,0 +1,82 @@
+Website Concept: "FocusTube" or "EduView"
+A clean, distraction-free platform that fetches and displays only educational YouTube videos, based on subjects/topics you choose. No random recommendations. No algorithmic distractions.
+
+🎯 Core Features
+Subject/Topic Selection
+
+Dropdown or search bar for selecting topics like:
+
+Math
+
+Science
+
+History
+
+Coding
+
+Competitive Exams (e.g., UPSC, NEET, JEE)
+
+Filtered Video Feed
+
+Videos shown will come from:
+
+Specific pre-approved educational channels (e.g., Khan Academy, Unacademy, Gate Smashers)
+
+Search results filtered using keywords + safe tags (e.g., “class 10 physics lecture site:youtube.com”)
+
+No thumbnails, no sidebar, no autoplay.
+
+Distraction Blocker
+
+Remove all YouTube-style distractions like:
+
+Suggestions
+
+Trending tabs
+
+Comments section
+
+Timer Mode (Optional)
+
+Watch videos in "Pomodoro" sessions: e.g., 25 minutes video, 5 minutes break.
+
+Alerts user if they watch too long without a break.
+
+Bookmark/Favorite Videos
+
+Users can save educational videos they liked for later access.
+
+Study Streak Tracker
+
+Track daily study video watch time and encourage streaks.
+
+🛠️ How You Can Build It (No Cost or Low Cost)
+Frontend: HTML + CSS + JavaScript (React optional)
+
+Backend (Optional): Firebase or Supabase if you want login/bookmark features
+
+Video Fetching:
+
+Use YouTube Data API v3 to search for videos from specific educational channels or keywords.
+
+Example query: site:youtube.com AND “math lecture” AND “class 10”
+
+Hosting: Use GitHub Pages, Netlify, or Vercel for free hosting.
+
+🚫 What It Will Avoid
+No trending videos
+
+No entertainment or shorts
+
+No unrelated suggestions
+
+No comments (less negativity or distraction)
+
+No autoplay chaining of unrelated content
+
+💡 Future Ideas
+Add a Chrome Extension that automatically redirects YouTube to your site when a user tries to access it for study-related searches.
+
+Add AI-based classification to detect and block time-wasting videos.
+
+Allow students to create "focus playlists" and share them with peers.
