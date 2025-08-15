@@ -6,6 +6,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, GraduationCap } from "lucide-react";
 import { SearchFilters } from "@/types/video";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 interface SearchFiltersProps {
   searchQuery: string;
@@ -57,7 +65,7 @@ export default function SearchFiltersComponent({
               </div>
               <span className="hidden sm:block text-sm text-slate-600 font-medium">Distraction-Free Learning</span>
             </div>
-            
+
             <nav className="hidden md:flex items-center space-x-6">
               <a href="/dashboard" className="text-slate-600 hover:text-primary transition-colors">Dashboard</a>
               <a href="/notes" className="text-slate-600 hover:text-primary transition-colors">Notes</a>
@@ -119,6 +127,30 @@ export default function SearchFiltersComponent({
                   {subject}
                 </Button>
               ))}
+            </div>
+
+            {/* Filter for Trusted Channels */}
+            <div className="mt-8 flex flex-col space-y-4">
+              <Label htmlFor="trustedChannels" className="text-lg font-semibold text-slate-800">Trusted Channels</Label>
+              <Select 
+                onValueChange={(value) => {
+                  setFilters({ ...filters, trustedChannelId: value });
+                  setSelectedSubject(value); // Assuming you want to update selectedSubject based on channel
+                }}
+                defaultValue={filters.trustedChannelId || "all"} // Set default to "all" if not specified
+              >
+                <SelectTrigger className="w-full md:w-[200px] h-12 text-lg border-slate-300 rounded-lg focus:ring-primary focus:border-transparent">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {trustedChannels.map((channel) => (
+                    <SelectItem key={channel.id} value={channel.id}>
+                      {channel.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
