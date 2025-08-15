@@ -162,6 +162,7 @@ export class MemStorage implements IStorage {
       ...insertNote, 
       id, 
       userId,
+      subject: insertNote.subject || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -182,6 +183,11 @@ export class MemStorage implements IStorage {
       ...insertTask, 
       id, 
       userId,
+      status: insertTask.status || "pending",
+      subject: insertTask.subject || null,
+      description: insertTask.description || null,
+      priority: insertTask.priority || "medium",
+      dueDate: insertTask.dueDate || null,
       createdAt: new Date()
     };
     this.tasks.set(id, task);
@@ -201,7 +207,7 @@ export class MemStorage implements IStorage {
       ...insertFlashcard, 
       id, 
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     };
     this.flashcards.set(id, flashcard);
     return flashcard;
@@ -220,7 +226,7 @@ export class MemStorage implements IStorage {
       ...insertSchedule, 
       id, 
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     };
     this.schedules.set(id, schedule);
     return schedule;

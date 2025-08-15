@@ -17,13 +17,13 @@ export default function Home() {
   // Fetch trending videos by default
   const { data: trendingData, isLoading: trendingLoading } = useQuery({
     queryKey: ['/api/videos/trending'],
-    enabled: !searchQuery && !selectedSubject,
+    enabled: !searchQuery && (!selectedSubject || selectedSubject === "all"),
   });
 
   // Search videos with query parameters
   const searchParams = new URLSearchParams();
   if (searchQuery) searchParams.append('q', searchQuery);
-  if (selectedSubject) searchParams.append('subject', selectedSubject);
+  if (selectedSubject && selectedSubject !== "all") searchParams.append('subject', selectedSubject);
   
   const { data: searchData, isLoading: searchLoading } = useQuery({
     queryKey: ['/api/videos/search', searchParams.toString()],
@@ -31,7 +31,7 @@ export default function Home() {
       const response = await fetch(`/api/videos/search?${searchParams.toString()}`);
       return response.json();
     },
-    enabled: !!(searchQuery || selectedSubject),
+    enabled: !!(searchQuery || (selectedSubject && selectedSubject !== "all")),
   });
 
   const handleSearch = () => {
@@ -49,7 +49,7 @@ export default function Home() {
   };
 
   // Get videos from either search results or trending
-  const videos = (searchData?.videos || trendingData?.videos || []) as Video[];
+  const videos: Video[] = (searchData as any)?.videos || (trendingData as any)?.videos || [];
   const isLoading = trendingLoading || searchLoading;
 
   const subjects = [
@@ -91,7 +91,7 @@ export default function Home() {
                   <SelectValue placeholder="Select Subject" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Subjects</SelectItem>
+                  <SelectItem value="all">All Subjects</SelectItem>
                   {subjects.map((subject) => (
                     <SelectItem key={subject} value={subject.toLowerCase()}>
                       {subject}
@@ -153,11 +153,11 @@ export default function Home() {
                 }
               </p>
             </div>
-            {(searchQuery || selectedSubject) && (
+            {(searchQuery || (selectedSubject && selectedSubject !== "all")) && (
               <Button 
                 onClick={() => {
                   setSearchQuery("");
-                  setSelectedSubject("");
+                  setSelectedSubject("all");
                 }}
                 variant="outline"
               >

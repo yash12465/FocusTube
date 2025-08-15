@@ -134,9 +134,10 @@ export default function SearchFiltersComponent({
               <Label htmlFor="trustedChannels" className="text-lg font-semibold text-slate-800">Trusted Channels</Label>
               <Select 
                 onValueChange={(value) => {
-                  setFilters({ ...filters, trustedChannelId: value === "all" ? "" : value });
+                  const newChannels = value === "all" ? [] : [value];
+                  setFilters({ ...filters, channels: newChannels });
                 }}
-                defaultValue={filters.trustedChannelId || "all"}
+                defaultValue={filters.channels.length > 0 ? filters.channels[0] : "all"}
               >
                 <SelectTrigger className="w-full md:w-[200px] h-12 text-lg border-slate-300 rounded-lg focus:ring-primary focus:border-transparent">
                   <SelectValue placeholder="All Categories" />
