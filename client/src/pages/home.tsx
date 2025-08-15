@@ -5,14 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import VideoCard from "@/components/video-card";
 import VideoModal from "@/components/video-modal";
+import { AISmartSearch } from "@/components/ai-smart-search";
+import { AIVideoDetails } from "@/components/ai-video-details";
 import { Video } from "@/types/video";
-import { Search, Loader2, Play } from "lucide-react";
+import { Search, Loader2, Play, Brain } from "lucide-react";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAIDetails, setShowAIDetails] = useState(false);
+  const [useAISearch, setUseAISearch] = useState(true);
 
   // Fetch trending videos by default
   const { data: trendingData, isLoading: trendingLoading } = useQuery({
@@ -34,13 +38,21 @@ export default function Home() {
     enabled: !!(searchQuery || (selectedSubject && selectedSubject !== "all")),
   });
 
-  const handleSearch = () => {
+  const handleSearch = (query?: string) => {
+    if (query) {
+      setSearchQuery(query);
+    }
     // Search will automatically trigger due to query key changes
   };
 
   const handlePlayVideo = (video: Video) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
+  };
+
+  const handleAIDetails = (video: Video) => {
+    setSelectedVideo(video);
+    setShowAIDetails(true);
   };
 
   const handleCloseModal = () => {
@@ -72,46 +84,73 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Search Section */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  type="text"
-                  placeholder="Search for educational videos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 py-3 text-lg"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                />
-              </div>
-              <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                <SelectTrigger className="w-full md:w-64 py-3">
-                  <SelectValue placeholder="Select Subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Subjects</SelectItem>
-                  {subjects.map((subject) => (
-                    <SelectItem key={subject} value={subject.toLowerCase()}>
-                      {subject}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button 
-                onClick={handleSearch}
-                className="px-8 py-3 text-lg"
-                disabled={isLoading}
+          {/* AI-Powered Search Toggle */}
+          <div className="max-w-4xl mx-auto mb-6">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <Button
+                variant={useAISearch ? "default" : "outline"}
+                onClick={() => setUseAISearch(true)}
+                className="flex items-center gap-2"
               >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Search className="w-5 h-5" />
-                )}
-                Search
+                <Brain className="w-4 h-4" />
+                AI-Powered Search
+              </Button>
+              <Button
+                variant={!useAISearch ? "default" : "outline"}
+                onClick={() => setUseAISearch(false)}
+                className="flex items-center gap-2"
+              >
+                <Search className="w-4 h-4" />
+                Basic Search
               </Button>
             </div>
+
+            {/* Conditional Search Interface */}
+            {useAISearch ? (
+              <AISmartSearch 
+                onSearch={handleSearch} 
+                currentSubject={selectedSubject} 
+              />
+            ) : (
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Input
+                    type="text"
+                    placeholder="Search for educational videos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 py-3 text-lg"
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                </div>
+                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                  <SelectTrigger className="w-full md:w-64 py-3">
+                    <SelectValue placeholder="Select Subject" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Subjects</SelectItem>
+                    {subjects.map((subject) => (
+                      <SelectItem key={subject} value={subject.toLowerCase()}>
+                        {subject}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  onClick={() => handleSearch()}
+                  className="px-8 py-3 text-lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Search className="w-5 h-5" />
+                  )}
+                  Search
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -171,11 +210,22 @@ export default function Home() {
         {!isLoading && videos.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {videos.map((video: Video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onPlay={handlePlayVideo}
-              />
+              <div key={video.id} className="group relative">
+                <VideoCard
+                  video={video}
+                  onPlay={handlePlayVideo}
+                />
+                {/* AI Features Button */}
+                <Button
+                  onClick={() => handleAIDetails(video)}
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white border-purple-200 text-purple-700 hover:text-purple-800"
+                >
+                  <Brain className="w-3 h-3 mr-1" />
+                  AI
+                </Button>
+              </div>
             ))}
           </div>
         )}
@@ -187,6 +237,15 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+
+      {/* AI Video Details Modal */}
+      {selectedVideo && (
+        <AIVideoDetails
+          video={selectedVideo}
+          isOpen={showAIDetails}
+          onClose={() => setShowAIDetails(false)}
+        />
+      )}
     </div>
   );
 }

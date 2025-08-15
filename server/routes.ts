@@ -9,6 +9,7 @@ import {
   insertFlashcardSchema, 
   insertScheduleSchema 
 } from "@shared/schema";
+import { aiService, AIRecommendationRequest } from "./ai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || "";
@@ -317,6 +318,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(schedule);
     } catch (error) {
       res.status(400).json({ message: "Invalid schedule data" });
+    }
+  });
+
+  // AI-powered search and recommendations
+  app.post("/api/ai/recommendations", async (req, res) => {
+    try {
+      const { query, subject, userLevel, previousVideos } = req.body as AIRecommendationRequest;
+      
+      if (!query) {
+        return res.status(400).json({ message: "Query is required" });
+      }
+
+      const recommendations = await aiService.getVideoRecommendations({
+        query,
+        subject,
+        userLevel,
+        previousVideos
+      });
+
+      res.json(recommendations);
+    } catch (error) {
+      console.error('AI Recommendations Error:', error);
+      res.status(500).json({ message: "Failed to get AI recommendations" });
+    }
+  });
+
+  // AI video summary
+  app.post("/api/ai/video-summary", async (req, res) => {
+    try {
+      const { video } = req.body;
+      
+      if (!video) {
+        return res.status(400).json({ message: "Video data is required" });
+      }
+
+      const summary = await aiService.generateVideoSummary(video);
+      res.json(summary);
+    } catch (error) {
+      console.error('AI Summary Error:', error);
+      res.status(500).json({ message: "Failed to generate video summary" });
+    }
+  });
+
+  // AI quiz generation
+  app.post("/api/ai/generate-quiz", async (req, res) => {
+    try {
+      const { video, questionCount = 5 } = req.body;
+      
+      if (!video) {
+        return res.status(400).json({ message: "Video data is required" });
+      }
+
+      const quiz = await aiService.generateQuiz(video, questionCount);
+      res.json(quiz);
+    } catch (error) {
+      console.error('AI Quiz Error:', error);
+      res.status(500).json({ message: "Failed to generate quiz" });
+    }
+  });
+
+  // AI content moderation
+  app.post("/api/ai/moderate", async (req, res) => {
+    try {
+      const { title, description } = req.body;
+      
+      if (!title || !description) {
+        return res.status(400).json({ message: "Title and description are required" });
+      }
+
+      const isEducational = await aiService.moderateContent(title, description);
+      res.json({ isEducational });
+    } catch (error) {
+      console.error('AI Moderation Error:', error);
+      res.status(500).json({ message: "Failed to moderate content" });
     }
   });
 

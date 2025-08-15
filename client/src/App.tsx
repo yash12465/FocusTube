@@ -9,6 +9,7 @@ import Notes from "@/pages/notes";
 import Tasks from "@/pages/tasks";
 import Flashcards from "@/pages/flashcards";
 import Schedule from "@/pages/schedule";
+import AIFeatures from "@/pages/ai-features";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/tasks" component={Tasks} />
       <Route path="/flashcards" component={Flashcards} />
       <Route path="/schedule" component={Schedule} />
+      <Route path="/ai-features" component={AIFeatures} />
       <Route component={NotFound} />
     </Switch>
   );
