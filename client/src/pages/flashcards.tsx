@@ -31,7 +31,7 @@ export default function Flashcards() {
   const [flashcardForm, setFlashcardForm] = useState({
     front: "",
     back: "",
-    subject: "",
+    subject: "Mathematics",
     difficulty: "medium",
   });
 
@@ -63,7 +63,7 @@ export default function Flashcards() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/flashcards'] });
       setIsCreateModalOpen(false);
-      setFlashcardForm({ front: "", back: "", subject: "", difficulty: "medium" });
+      setFlashcardForm({ front: "", back: "", subject: "Mathematics", difficulty: "medium" });
       toast({ title: "Flashcard created successfully!" });
     },
     onError: () => {
@@ -187,7 +187,7 @@ export default function Flashcards() {
               <ChevronLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            
+
             <Button variant="outline" onClick={endStudySession}>
               End Session
             </Button>
@@ -231,13 +231,13 @@ export default function Flashcards() {
             <h1 className="text-3xl font-bold text-slate-800 mb-2">Flashcards</h1>
             <p className="text-lg text-slate-600">Study with spaced repetition</p>
           </div>
-          
+
           <div className="flex space-x-3">
             <Button variant="outline" onClick={startStudySession} disabled={filteredCards.length === 0}>
               <Brain className="w-4 h-4 mr-2" />
               Study ({filteredCards.length} cards)
             </Button>
-            
+
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -271,7 +271,7 @@ export default function Flashcards() {
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <Select value={flashcardForm.subject} onValueChange={(value) => setFlashcardForm({ ...flashcardForm, subject: value })}>
+                    <Select value={flashcardForm.subject || "Mathematics"} onValueChange={(value) => setFlashcardForm({ ...flashcardForm, subject: value })}>
                       <SelectTrigger>
                         <SelectValue placeholder="Subject" />
                       </SelectTrigger>
@@ -339,7 +339,7 @@ export default function Flashcards() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {filteredCards.map((card: Flashcard) => (
               <Card key={card.id} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">

@@ -33,7 +33,7 @@ export default function Tasks() {
     description: "",
     priority: "medium",
     dueDate: "",
-    subject: "",
+    subject: "none",
   });
 
   const { toast } = useToast();
@@ -74,7 +74,7 @@ export default function Tasks() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       setIsCreateModalOpen(false);
-      setTaskForm({ title: "", description: "", priority: "medium", dueDate: "", subject: "" });
+      setTaskForm({ title: "", description: "", priority: "medium", dueDate: "", subject: "none" });
       toast({ title: "Task created successfully!" });
     },
     onError: () => {
@@ -174,11 +174,12 @@ export default function Tasks() {
                       <SelectItem value="urgent">Urgent</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={taskForm.subject} onValueChange={(value) => setTaskForm({ ...taskForm, subject: value })}>
+                  <Select value={taskForm.subject || "none"} onValueChange={(value) => setTaskForm({ ...taskForm, subject: value === "none" ? "" : value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Subject" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="none">No Subject</SelectItem>
                       {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
