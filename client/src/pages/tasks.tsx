@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import SearchFiltersComponent from "@/components/search-filters";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Calendar, Clock, AlertCircle, CheckCircle2, Filter } from "lucide-react";
+import { Plus, Calendar, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface Task {
   id: number;
@@ -26,8 +26,8 @@ interface Task {
 
 export default function Tasks() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterPriority, setFilterPriority] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -40,13 +40,13 @@ export default function Tasks() {
   const queryClient = useQueryClient();
 
   const subjects = [
-    "Mathematics", "Science", "History", "Programming", 
+    "Mathematics", "Science", "History", "Programming",
     "Physics", "Chemistry", "Biology", "English"
   ];
 
   const priorityColors = {
     low: "bg-green-100 text-green-700",
-    medium: "bg-yellow-100 text-yellow-700", 
+    medium: "bg-yellow-100 text-yellow-700",
     high: "bg-orange-100 text-orange-700",
     urgent: "bg-red-100 text-red-700"
   };
@@ -117,7 +117,7 @@ export default function Tasks() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SearchFiltersComponent 
+      <SearchFiltersComponent
         searchQuery=""
         setSearchQuery={() => {}}
         selectedSubject=""
@@ -133,7 +133,7 @@ export default function Tasks() {
             <h1 className="text-3xl font-bold text-slate-800 mb-2">Task Manager</h1>
             <p className="text-lg text-slate-600">Track your assignments and deadlines</p>
           </div>
-          
+
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -163,7 +163,7 @@ export default function Tasks() {
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Select value={taskForm.priority} onValueChange={(value) => setTaskForm({ ...taskForm, priority: value })}>
+                  <Select value={taskForm.priority} onValueChange={(value) => setTaskForm({ ...taskForm, priority: value as "low" | "medium" | "high" | "urgent" })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Priority" />
                     </SelectTrigger>

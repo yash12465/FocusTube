@@ -25,7 +25,7 @@ export default function Schedule() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
     title: "",
-    subject: "",
+    subject: "all",
     startTime: "",
     endTime: "",
     dayOfWeek: 0,
@@ -63,7 +63,7 @@ export default function Schedule() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/schedules'] });
       setIsCreateModalOpen(false);
-      setScheduleForm({ title: "", subject: "", startTime: "", endTime: "", dayOfWeek: 0, color: "#3B82F6" });
+      setScheduleForm({ title: "", subject: "all", startTime: "", endTime: "", dayOfWeek: 0, color: "#3B82F6" });
       toast({ title: "Schedule item created successfully!" });
     },
     onError: () => {
@@ -101,7 +101,7 @@ export default function Schedule() {
             <h1 className="text-3xl font-bold text-slate-800 mb-2">Study Schedule</h1>
             <p className="text-lg text-slate-600">Plan your weekly study sessions</p>
           </div>
-          
+
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -128,6 +128,7 @@ export default function Schedule() {
                       <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all">All Subjects</SelectItem>
                       {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
