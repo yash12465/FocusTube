@@ -8,7 +8,8 @@ import VideoModal from "@/components/video-modal";
 import { AISmartSearch } from "@/components/ai-smart-search";
 import { AIVideoDetails } from "@/components/ai-video-details";
 import { Video } from "@/types/video";
-import { Search, Loader2, Play, Brain } from "lucide-react";
+import { Search, Loader2, Play, Brain, Youtube, FileText } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,6 +83,28 @@ export default function Home() {
             <p className="text-lg text-gray-600">
               Discover curated educational content from trusted sources
             </p>
+            
+            {/* New Feature Alert */}
+            <div className="mt-6 max-w-3xl mx-auto">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center justify-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Youtube className="w-5 h-5 text-red-600" />
+                    <FileText className="w-5 h-5 text-blue-600" />
+                    <Brain className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="font-semibold text-gray-900">New: YouTube Transcript AI Processor</h3>
+                    <p className="text-sm text-gray-600">Generate summaries and quizzes from real video transcripts</p>
+                  </div>
+                  <Link href="/transcript-processor">
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                      Try Now
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* AI-Powered Search Toggle */}

@@ -2,9 +2,9 @@
 
 ## Overview
 
-FocusTube is a cutting-edge, distraction-free educational video platform that combines curated YouTube content with advanced AI capabilities. The platform provides quality educational videos from trusted channels while eliminating typical distractions like recommendations, comments, or trending sections. Enhanced with OpenRouter API and Mistral AI integration, FocusTube now offers intelligent search, personalized recommendations, AI-generated summaries, and interactive quizzes.
+FocusTube is a cutting-edge, distraction-free educational video platform that combines curated YouTube content with advanced AI capabilities. The platform provides quality educational videos from trusted channels while eliminating typical distractions like recommendations, comments, or trending sections. Enhanced with OpenAI API integration and the revolutionary YouTube Transcript AI Processor, FocusTube now offers real transcript analysis, comprehensive summaries, and interactive quizzes generated from actual video content.
 
-The platform features a comprehensive study management system with bookmarks, notes, tasks, flashcards, study timers, and scheduling capabilities, all enhanced by AI to help users maintain focus and accelerate their learning progress.
+The platform features a comprehensive study management system with bookmarks, notes, tasks, flashcards, study timers, and scheduling capabilities, all enhanced by AI to help users maintain focus and accelerate their learning progress. The breakthrough addition of real YouTube transcript processing enables authentic educational content analysis rather than metadata-based summaries.
 
 ## User Preferences
 
@@ -48,9 +48,17 @@ Preferred communication style: Simple, everyday language.
 
 ### External Service Integrations
 - **YouTube Data API**: For fetching educational video content and metadata
-- **OpenRouter API**: AI-powered search and content analysis using Mistral AI model
+- **YouTube Transcript API**: Python-based service for extracting real video transcripts
+- **OpenAI API**: Advanced AI processing for transcript analysis, summary generation, and educational content creation
 - **Content Filtering**: AI-enhanced whitelist-based approach using trusted educational channels
 - **Video Search**: AI-powered intelligent search with natural language processing
+
+### YouTube Transcript Processing Architecture
+- **Python Integration**: Node.js server spawns Python processes to fetch transcripts using youtube-transcript-api
+- **Real Transcript Analysis**: Actual video spoken content extracted and processed rather than metadata-based summaries
+- **Advanced AI Processing**: OpenAI GPT-4o model generates comprehensive educational content from transcript data
+- **Hybrid Backend**: Express.js server with Python subprocess integration for transcript fetching
+- **Student Q&A System**: AI-powered question answering based on actual video content
 
 ### AI-Powered Features
 

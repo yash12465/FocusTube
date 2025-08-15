@@ -395,6 +395,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import transcript processing services
+  const { 
+    extractVideoId, 
+    getTranscript, 
+    generateSummaryAndQuestions, 
+    answerQuestionAboutTranscript, 
+    searchTranscript 
+  } = await import('./transcript-service');
+
+  // Transcript processing endpoints
+  app.post("/api/transcript/process-video", async (req, res) => {
+    try {
+      const { video_url, video_title } = req.body;
+      
+      if (!video_url) {
+        return res.status(400).json({ error: "video_url is required" });
+      }
+
+      // Extract video ID
+      const video_id = extractVideoId(video_url);
+      
+      // Get transcript using Python script
+      const transcript = await getTranscript(video_id);
+      
+      if (!transcript || transcript.length < 50) {
+        return res.status(400).json({ error: "Transcript too short or unavailable" });
+      }
+
+      // Generate AI content
+      const aiContent = await generateSummaryAndQuestions(transcript, video_title || '');
+      
+      res.json({
+        success: true,
+        video_id,
+        transcript,
+        summary: aiContent.summary,
+        questions: aiContent.questions,
+        transcript_length: transcript.length
+      });
+      
+    } catch (error: any) {
+      console.error('Transcript processing error:', error);
+      res.status(500).json({ error: error.message || "Failed to process video transcript" });
+    }
+  });
+
+  app.post("/api/transcript/ask-question", async (req, res) => {
+    try {
+      const { question, transcript, video_title } = req.body;
+      
+      if (!question || !transcript) {
+        return res.status(400).json({ error: "question and transcript are required" });
+      }
+
+      const answer = await answerQuestionAboutTranscript(question, transcript, video_title || '');
+      
+      res.json({
+        success: true,
+        question,
+        answer
+      });
+      
+    } catch (error: any) {
+      console.error('Question answering error:', error);
+      res.status(500).json({ error: error.message || "Failed to answer question" });
+    }
+  });
+
+  app.post("/api/transcript/search", async (req, res) => {
+    try {
+      const { query, transcript } = req.body;
+      
+      if (!query || !transcript) {
+        return res.status(400).json({ error: "query and transcript are required" });
+      }
+
+      const results = searchTranscript(query, transcript);
+      
+      res.json({
+        success: true,
+        query,
+        results,
+        total_matches: results.length
+      });
+      
+    } catch (error: any) {
+      console.error('Transcript search error:', error);
+      res.status(500).json({ error: error.message || "Failed to search transcript" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

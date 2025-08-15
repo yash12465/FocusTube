@@ -11,6 +11,7 @@ import Flashcards from "@/pages/flashcards";
 import Schedule from "@/pages/schedule";
 import AIFeatures from "@/pages/ai-features";
 import AIDashboard from "@/pages/ai-dashboard";
+import TranscriptProcessor from "@/pages/transcript-processor";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/ai-dashboard" component={AIDashboard} />
+      <Route path="/transcript-processor" component={TranscriptProcessor} />
       <Route path="/notes" component={Notes} />
       <Route path="/tasks" component={Tasks} />
       <Route path="/flashcards" component={Flashcards} />
