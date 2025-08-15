@@ -56,12 +56,42 @@ export function getTranscript(videoId: string): Promise<string> {
     const pythonScript = `
 import sys
 import json
-from youtube_transcript_api import YouTubeTranscriptApi
 import re
 
 try:
+    from youtube_transcript_api import YouTubeTranscriptApi
+except ImportError:
+    print("ERROR: youtube-transcript-api not installed. Please run: pip install youtube-transcript-api", file=sys.stderr)
+    sys.exit(1)
+
+try:
     video_id = sys.argv[1]
-    transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+    
+    # Try to get transcript with different language options
+    try:
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+    except Exception as e1:
+        try:
+            # Try with auto-generated English
+            transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+        except Exception as e2:
+            try:
+                # Try to get any available transcript
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en-US', 'en-GB', 'en-AU'])
+            except Exception as e3:
+                # Last resort - try to list available transcripts and use the first one
+                try:
+                    available_transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
+                    for transcript in available_transcripts:
+                        try:
+                            transcript_list = transcript.fetch()
+                            break
+                        except:
+                            continue
+                    else:
+                        raise Exception("No transcripts available for this video")
+                except Exception as e4:
+                    raise Exception(f"Could not fetch any transcript: {str(e4)}")
     
     # Combine all transcript text
     full_transcript = ' '.join([entry['text'] for entry in transcript_list])
@@ -70,19 +100,14 @@ try:
     full_transcript = re.sub(r'\\[.*?\\]', '', full_transcript)  # Remove annotations
     full_transcript = re.sub(r'\\s+', ' ', full_transcript)  # Normalize whitespace
     
+    if len(full_transcript.strip()) < 10:
+        raise Exception("Transcript too short or empty")
+    
     print(full_transcript.strip())
     
 except Exception as e:
-    # Try to get auto-generated transcript if manual one fails
-    try:
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
-        full_transcript = ' '.join([entry['text'] for entry in transcript_list])
-        full_transcript = re.sub(r'\\[.*?\\]', '', full_transcript)
-        full_transcript = re.sub(r'\\s+', ' ', full_transcript)
-        print(full_transcript.strip())
-    except Exception as e2:
-        print(f"ERROR: Could not fetch transcript: {str(e2)}", file=sys.stderr)
-        sys.exit(1)
+    print(f"ERROR: Could not fetch transcript: {str(e)}", file=sys.stderr)
+    sys.exit(1)
 `;
 
     const python = spawn('python', ['-c', pythonScript, videoId]);
