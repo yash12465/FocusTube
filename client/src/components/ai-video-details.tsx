@@ -14,11 +14,15 @@ import {
   CheckCircle2, 
   XCircle,
   Lightbulb,
-  BookOpen
+  BookOpen,
+  Target,
+  ArrowRight,
+  Search
 } from 'lucide-react';
 import { generateVideoSummary, generateQuiz, AIVideoSummaryResponse, AIQuizResponse, AIQuizQuestion } from '@/lib/ai-api';
 import { Video } from '@/types/video';
 import { useToast } from '@/hooks/use-toast';
+import { AITranscriptSearch } from './ai-transcript-search';
 
 interface AIVideoDetailsProps {
   video: Video;
@@ -42,7 +46,7 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
 
   // AI Quiz Generation Mutation
   const quizMutation = useMutation({
-    mutationFn: () => generateQuiz(video, 5),
+    mutationFn: () => generateQuiz(video, 10),
     onSuccess: () => {
       setCurrentQuestionIndex(0);
       setSelectedAnswers([]);
@@ -115,7 +119,7 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
 
         <CardContent className="p-6">
           <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="summary" className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 AI Summary
@@ -123,6 +127,10 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
               <TabsTrigger value="quiz" className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4" />
                 Practice Quiz
+              </TabsTrigger>
+              <TabsTrigger value="transcript" className="flex items-center gap-2">
+                <Search className="w-4 h-4" />
+                Search Transcript
               </TabsTrigger>
             </TabsList>
 
@@ -188,11 +196,58 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
                     </CardContent>
                   </Card>
 
+                  {/* Prerequisites */}
+                  {summaryQuery.data.prerequisites && summaryQuery.data.prerequisites.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <BookOpen className="w-5 h-5 text-blue-600" />
+                          Prerequisites
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2">
+                          {summaryQuery.data.prerequisites.map((prereq, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-slate-700">{prereq}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Real-World Applications */}
+                  {summaryQuery.data.realWorldApplications && summaryQuery.data.realWorldApplications.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Target className="w-5 h-5 text-green-600" />
+                          Real-World Applications
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2">
+                          {summaryQuery.data.realWorldApplications.map((application, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-slate-700">{application}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   {/* Follow-up Topics */}
                   {summaryQuery.data.suggestedFollowUp.length > 0 && (
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-lg">What to Learn Next</CardTitle>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <ArrowRight className="w-5 h-5 text-purple-600" />
+                          What to Learn Next
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
@@ -239,17 +294,40 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
               )}
 
               {quizMutation.data && !showResults && (
-                <QuizQuestion
-                  question={quizMutation.data.questions[currentQuestionIndex]}
-                  questionNumber={currentQuestionIndex + 1}
-                  totalQuestions={quizMutation.data.questions.length}
-                  selectedAnswer={selectedAnswers[currentQuestionIndex]}
-                  onAnswerSelect={handleAnswerSelect}
-                  onNext={handleNextQuestion}
-                  onPrevious={handlePreviousQuestion}
-                  canGoNext={selectedAnswers[currentQuestionIndex] !== undefined}
-                  canGoPrevious={currentQuestionIndex > 0}
-                />
+                <div className="space-y-4">
+                  {/* Quiz Info */}
+                  <Card className="bg-gradient-to-r from-purple-50 to-blue-50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-purple-900">{quizMutation.data.topic}</h3>
+                          <p className="text-sm text-purple-700">
+                            {quizMutation.data.questions.length} concept-focused questions
+                          </p>
+                        </div>
+                        {quizMutation.data.learningObjectives && (
+                          <div className="text-right">
+                            <Badge variant="outline" className="border-purple-300 text-purple-700">
+                              Learning Assessment
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <QuizQuestion
+                    question={quizMutation.data.questions[currentQuestionIndex]}
+                    questionNumber={currentQuestionIndex + 1}
+                    totalQuestions={quizMutation.data.questions.length}
+                    selectedAnswer={selectedAnswers[currentQuestionIndex]}
+                    onAnswerSelect={handleAnswerSelect}
+                    onNext={handleNextQuestion}
+                    onPrevious={handlePreviousQuestion}
+                    canGoNext={selectedAnswers[currentQuestionIndex] !== undefined}
+                    canGoPrevious={currentQuestionIndex > 0}
+                  />
+                </div>
               )}
 
               {quizMutation.data && showResults && (
@@ -264,6 +342,11 @@ export function AIVideoDetails({ video, isOpen, onClose }: AIVideoDetailsProps) 
                   }}
                 />
               )}
+            </TabsContent>
+
+            {/* Transcript Search Tab */}
+            <TabsContent value="transcript" className="mt-6">
+              <AITranscriptSearch video={video} />
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -295,27 +378,60 @@ function QuizQuestion({
   canGoNext, 
   canGoPrevious 
 }: QuizQuestionProps) {
+  const getQuestionTypeColor = (type?: string) => {
+    switch (type) {
+      case 'conceptual': return 'bg-blue-100 text-blue-800';
+      case 'application': return 'bg-green-100 text-green-800';
+      case 'analysis': return 'bg-purple-100 text-purple-800';
+      case 'synthesis': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getQuestionDifficultyColor = (difficulty?: string) => {
+    switch (difficulty) {
+      case 'easy': return 'bg-green-100 text-green-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'hard': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Question {questionNumber} of {totalQuestions}</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold">Question {questionNumber} of {totalQuestions}</h3>
+          <div className="flex gap-2">
+            {question.questionType && (
+              <Badge className={getQuestionTypeColor(question.questionType)}>
+                {question.questionType}
+              </Badge>
+            )}
+            {question.difficulty && (
+              <Badge className={getQuestionDifficultyColor(question.difficulty)}>
+                {question.difficulty}
+              </Badge>
+            )}
+          </div>
+        </div>
         <Progress value={(questionNumber / totalQuestions) * 100} className="w-32" />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{question.question}</CardTitle>
+          <CardTitle className="text-lg leading-relaxed">{question.question}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {question.options.map((option, index) => (
             <Button
               key={index}
               variant={selectedAnswer === index ? "default" : "outline"}
-              className="w-full text-left justify-start h-auto p-4"
+              className="w-full text-left justify-start h-auto p-4 whitespace-normal"
               onClick={() => onAnswerSelect(index)}
             >
-              <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-              {option}
+              <span className="font-medium mr-3 flex-shrink-0">{String.fromCharCode(65 + index)}.</span>
+              <span className="text-left">{option}</span>
             </Button>
           ))}
         </CardContent>

@@ -28,6 +28,8 @@ export interface AIVideoSummaryResponse {
   keyPoints: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   suggestedFollowUp: string[];
+  prerequisites?: string[];
+  realWorldApplications?: string[];
 }
 
 export interface AIQuizQuestion {
@@ -35,11 +37,14 @@ export interface AIQuizQuestion {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  questionType?: 'conceptual' | 'application' | 'analysis' | 'synthesis';
+  difficulty?: 'easy' | 'medium' | 'hard';
 }
 
 export interface AIQuizResponse {
   questions: AIQuizQuestion[];
   topic: string;
+  learningObjectives?: string[];
 }
 
 /**
@@ -140,25 +145,31 @@ Respond in JSON format:
    */
   async generateVideoSummary(video: Video): Promise<AIVideoSummaryResponse> {
     const prompt = `
-Analyze this educational video and provide a comprehensive summary:
+As an educational content expert, analyze this video and create a comprehensive, detailed summary for students:
 
 Title: ${video.title}
 Channel: ${video.channel}
-Description: ${video.description.substring(0, 500)}...
+Description: ${video.description.substring(0, 800)}...
 Duration: ${video.duration}
 
-Please provide:
-1. A concise summary (2-3 sentences)
-2. 3-5 key learning points
-3. Difficulty level assessment
-4. 2-3 suggested follow-up topics
+Create a DETAILED and COMPREHENSIVE summary that includes:
+1. A thorough 4-6 paragraph summary explaining what the video covers, key concepts introduced, and learning objectives (minimum 300 words)
+2. 8-12 specific key learning points with detailed explanations
+3. Difficulty level assessment with reasoning
+4. 5-7 suggested follow-up topics for deeper learning
+5. Prerequisites students should know before watching
+6. Real-world applications of the concepts taught
+
+Make the summary educational, comprehensive, and helpful for students who want to understand the material deeply. Write as if you're creating study notes that could help someone learn without watching the video.
 
 Respond in JSON format:
 {
-  "summary": "Concise video summary",
-  "keyPoints": ["point 1", "point 2", "point 3"],
+  "summary": "Detailed 4-6 paragraph comprehensive summary (minimum 300 words)",
+  "keyPoints": ["detailed point 1 with explanation", "detailed point 2 with explanation", "detailed point 3 with explanation", "detailed point 4 with explanation", "detailed point 5 with explanation", "detailed point 6 with explanation", "detailed point 7 with explanation", "detailed point 8 with explanation"],
   "difficulty": "beginner|intermediate|advanced",
-  "suggestedFollowUp": ["follow-up topic 1", "follow-up topic 2"]
+  "suggestedFollowUp": ["follow-up topic 1", "follow-up topic 2", "follow-up topic 3", "follow-up topic 4", "follow-up topic 5"],
+  "prerequisites": ["prerequisite 1", "prerequisite 2", "prerequisite 3"],
+  "realWorldApplications": ["application 1", "application 2", "application 3"]
 }`;
 
     const response = await this.makeRequest([
@@ -169,10 +180,21 @@ Respond in JSON format:
       return JSON.parse(response);
     } catch (error) {
       return {
-        summary: `Educational video about ${video.title} by ${video.channel}`,
-        keyPoints: ['Key concepts covered in the video'],
+        summary: `This educational video "${video.title}" by ${video.channel} covers important concepts in its field. The video provides structured learning content designed to help students understand key principles and applications. Through clear explanations and examples, viewers will gain practical knowledge that can be applied in real-world scenarios. The content is presented in an accessible manner suitable for students at various learning levels.`,
+        keyPoints: [
+          'Introduction to core concepts and terminology',
+          'Step-by-step explanation of key processes',
+          'Practical examples and case studies',
+          'Common misconceptions and how to avoid them',
+          'Best practices and expert recommendations',
+          'Real-world applications and use cases'
+        ],
         difficulty: 'intermediate' as const,
-        suggestedFollowUp: ['Related topics to explore']
+        suggestedFollowUp: [
+          'Advanced topics in the same subject area',
+          'Related practical applications',
+          'Historical context and development'
+        ]
       };
     }
   }
@@ -180,28 +202,48 @@ Respond in JSON format:
   /**
    * Generate quiz questions based on video content
    */
-  async generateQuiz(video: Video, questionCount: number = 5): Promise<AIQuizResponse> {
+  async generateQuiz(video: Video, questionCount: number = 10): Promise<AIQuizResponse> {
     const prompt = `
-Create a ${questionCount}-question educational quiz based on this video:
+As an educational expert, create a comprehensive ${questionCount}-question quiz based on this educational video:
 
 Title: ${video.title}
 Channel: ${video.channel}
-Description: ${video.description.substring(0, 500)}...
+Description: ${video.description.substring(0, 800)}...
 
-Generate multiple-choice questions that test understanding of key concepts.
-Each question should have 4 options with only one correct answer.
+Create HIGH-QUALITY, CONCEPT-FOCUSED questions that test deep understanding of the material. Include:
+
+1. **Conceptual Understanding Questions** (40%): Test core concepts, principles, and theories
+2. **Application Questions** (30%): Test ability to apply knowledge to new situations
+3. **Analysis Questions** (20%): Test critical thinking and problem-solving skills
+4. **Synthesis Questions** (10%): Test ability to combine concepts and draw conclusions
+
+Question Requirements:
+- Each question should have 4 well-crafted options (no obvious answers)
+- Focus on WHY and HOW, not just WHAT
+- Include scenario-based questions when applicable
+- Test understanding at different cognitive levels
+- Avoid trivial or memorization-only questions
+- Make incorrect options plausible but clearly wrong to experts
+
+Provide detailed explanations that:
+- Explain why the correct answer is right
+- Briefly explain why other options are incorrect
+- Include additional context or related concepts
 
 Respond in JSON format:
 {
   "questions": [
     {
-      "question": "Question text",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "question": "Detailed conceptual question testing deep understanding",
+      "options": ["Plausible option A", "Plausible option B", "Plausible option C", "Plausible option D"],
       "correctAnswer": 0,
-      "explanation": "Why this answer is correct"
+      "explanation": "Comprehensive explanation of correct answer and why others are wrong, with additional context",
+      "questionType": "conceptual|application|analysis|synthesis",
+      "difficulty": "easy|medium|hard"
     }
   ],
-  "topic": "Main topic of the quiz"
+  "topic": "Specific topic covered in the video",
+  "learningObjectives": ["objective 1", "objective 2", "objective 3"]
 }`;
 
     const response = await this.makeRequest([
@@ -211,13 +253,32 @@ Respond in JSON format:
     try {
       return JSON.parse(response);
     } catch (error) {
+      // Enhanced fallback with better questions
       return {
-        questions: [{
-          question: `What is the main topic of "${video.title}"?`,
-          options: ['Option A', 'Option B', 'Option C', 'Option D'],
-          correctAnswer: 0,
-          explanation: 'This is a sample question generated as fallback'
-        }],
+        questions: [
+          {
+            question: `Based on the concepts presented in "${video.title}", which principle is most fundamental to understanding the topic?`,
+            options: [
+              'The foundational concept that underlies all other principles',
+              'A secondary principle that supports the main idea',
+              'An advanced application that requires prerequisite knowledge',
+              'A common misconception that students often have'
+            ],
+            correctAnswer: 0,
+            explanation: 'The foundational concept is most important because it provides the framework for understanding all other related principles and applications.'
+          },
+          {
+            question: `How would you apply the knowledge from this video to solve a real-world problem?`,
+            options: [
+              'By following the exact steps shown without modification',
+              'By adapting the principles to fit the specific context and constraints',
+              'By memorizing the examples and repeating them exactly',
+              'By ignoring the theoretical aspects and focusing only on practical steps'
+            ],
+            correctAnswer: 1,
+            explanation: 'Real-world applications require adapting principles to specific contexts rather than rigid adherence to examples.'
+          }
+        ],
         topic: video.title
       };
     }

@@ -23,6 +23,8 @@ export interface AIVideoSummaryResponse {
   keyPoints: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   suggestedFollowUp: string[];
+  prerequisites?: string[];
+  realWorldApplications?: string[];
 }
 
 export interface AIQuizQuestion {
@@ -30,11 +32,14 @@ export interface AIQuizQuestion {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  questionType?: 'conceptual' | 'application' | 'analysis' | 'synthesis';
+  difficulty?: 'easy' | 'medium' | 'hard';
 }
 
 export interface AIQuizResponse {
   questions: AIQuizQuestion[];
   topic: string;
+  learningObjectives?: string[];
 }
 
 /**
