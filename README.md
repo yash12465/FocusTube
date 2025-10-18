@@ -109,19 +109,28 @@ If you encounter issues with the transcript feature:
 1. **Verify Python Installation**:
    ```bash
    python --version
+   # or on some systems:
+   python3 --version
    ```
 
 2. **Verify youtube-transcript-api Installation**:
    ```bash
    python -c "from youtube_transcript_api import YouTubeTranscriptApi; print('OK')"
+   # or on some systems:
+   python3 -c "from youtube_transcript_api import YouTubeTranscriptApi; print('OK')"
    ```
 
 3. **Reinstall Python Dependencies**:
    ```bash
    pip install -r requirements.txt --force-reinstall
+   # or on some systems:
+   pip3 install -r requirements.txt --force-reinstall
    ```
 
-4. **Check Python Path**: Ensure the `python` command is in your system PATH
+4. **Check Python Path**: Ensure the `python` command is in your system PATH. If you need to use `python3` instead, add this to your `.env` file:
+   ```env
+   PYTHON_COMMAND=python3
+   ```
 
 ### Common Issues
 

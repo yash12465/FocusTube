@@ -50,9 +50,16 @@ export function extractVideoId(url: string): string {
   throw new Error('Invalid YouTube URL or video ID');
 }
 
+// Determine the correct Python command to use
+function getPythonCommand(): string {
+  // Try 'python' first, fall back to 'python3' if needed
+  return process.env.PYTHON_COMMAND || 'python';
+}
+
 export function getTranscript(videoId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // Use Python subprocess to get transcript
+    const pythonCommand = getPythonCommand();
     const pythonScript = `
 import sys
 import json
@@ -110,7 +117,7 @@ except Exception as e:
     sys.exit(1)
 `;
 
-    const python = spawn('python', ['-c', pythonScript, videoId]);
+    const python = spawn(pythonCommand, ['-c', pythonScript, videoId]);
     let transcript = '';
     let error = '';
 
@@ -122,11 +129,19 @@ except Exception as e:
       error += data.toString();
     });
 
+    python.on('error', (err) => {
+      // Handle spawn errors (e.g., python command not found)
+      console.error('Failed to spawn Python process:', err);
+      reject(new Error(`Failed to start Python: ${err.message}. Make sure Python is installed and in PATH.`));
+    });
+
     python.on('close', (code) => {
       if (code === 0 && transcript.trim()) {
         resolve(transcript.trim());
       } else {
-        reject(new Error(error || 'Failed to fetch transcript'));
+        const errorMessage = error || 'Failed to fetch transcript';
+        console.error('Python transcript fetch failed:', errorMessage);
+        reject(new Error(errorMessage));
       }
     });
   });
