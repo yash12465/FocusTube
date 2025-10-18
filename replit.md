@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 - Drizzle ORM with PostgreSQL driver
 - Neon serverless PostgreSQL database
 - YouTube Data API v3
+- **Python 3.8+** with youtube-transcript-api package (required for transcript functionality)
 
 ### UI and Styling
 - Tailwind CSS for utility-first styling
