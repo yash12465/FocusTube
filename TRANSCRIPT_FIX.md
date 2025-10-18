@@ -207,10 +207,10 @@ OPENAI_API_KEY=your_api_key_here
 
 ### Modified Files
 - `replit.md` - Added Python dependency documentation
+- `server/transcript-service.ts` - Enhanced with configurable Python command and improved error handling
 
-### Existing Files (No Changes)
-- `server/transcript-service.ts` - Already had correct implementation
-- `requirements.txt` - Already had correct dependencies
+### Existing Files (Correct Implementation)
+- `requirements.txt` - Already had correct dependencies listed
 - `server/routes.ts` - Already had correct API endpoints
 - `client/src/components/transcript-ai-processor.tsx` - Already had correct UI
 

@@ -52,7 +52,8 @@ export function extractVideoId(url: string): string {
 
 // Determine the correct Python command to use
 function getPythonCommand(): string {
-  // Try 'python' first, fall back to 'python3' if needed
+  // Use PYTHON_COMMAND env var or default to 'python'
+  // Users can set PYTHON_COMMAND=python3 in .env if needed
   return process.env.PYTHON_COMMAND || 'python';
 }
 
